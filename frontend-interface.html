@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>区块链上最无聊的游戏 | The Most Boring Game on Blockchain</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-top: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .language-switch {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            margin: 40px 0;
+        }
+        .big-button {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background-color: #3498db;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        .big-button:hover {
+            transform: scale(1.05);
+            background-color: #2980b9;
+        }
+        .big-button:active {
+            transform: scale(0.95);
+        }
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        .stat-box {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            min-width: 150px;
+            margin: 10px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 10px 0;
+            color: #3498db;
+        }
+        .user-info {
+            margin-top: 40px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+        .connect-button {
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        .connect-button:hover {
+            background-color: #27ae60;
+        }
+        .connect-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .timer {
+            font-size: 20px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .language-btn {
+            background: none;
+            border: 1px solid #ddd;
+            padding: 5px 10px;
+            margin-left: 5px;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+        .language-btn.active {
+            background-color: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="language-switch">
+        <button id="en-btn" class="language-btn active">English</button>
+        <button id="cn-btn" class="language-btn">中文</button>
+    </div>
+    
+    <div class="container">
+        <h1 class="en">The Most Boring Game on Blockchain</h1>
+        <h1 class="cn hidden">区块链上最无聊的游戏</h1>
+        
+        <div class="connect-container">
+            <button id="connect-wallet" class="connect-button">
+                <span class="en">Connect Wallet</span>
+                <span class="cn hidden">连接钱包</span>
+            </button>
+        </div>
+        
+        <div id="game-container" style="display: none;">
+            <div class="timer">
+                <span class="en">Game resets in: </span>
+                <span class="cn hidden">游戏重置倒计时: </span>
+                <span id="timer-value">--:--:--</span>
+            </div>
+            
+            <div class="button-container">
+                <button id="boring-button" class="big-button">
+                    <span class="en">CLICK ME</span>
+                    <span class="cn hidden">点我</span>
+                </button>
+            </div>
+            
+            <div class="stats">
+                <div class="stat-box">
+                    <span class="en">Total Clicks</span>
+                    <span class="cn hidden">总点击次数</span>
+                    <div id="total-clicks" class="stat-value">0</div>
+                </div>
+                <div class="stat-box">
+                    <span class="en">Your Clicks</span>
+                    <span class="cn hidden">你的点击</span>
+                    <div id="your-clicks" class="stat-value">0</div>
+                </div>
+                <div class="stat-box">
+                    <span class="en">Last Clicker</span>
+                    <span class="cn hidden">最后点击者</span>
+                    <div id="last-clicker" class="stat-value">-</div>
+                </div>
+            </div>
+            
+            <div class="user-info">
+                <h3 class="en">Your Boring Status</h3>
+                <h3 class="cn hidden">你的无聊状态</h3>
+                
+                <p>
+                    <span class="en">Your Title: </span>
+                    <span class="cn hidden">你的头衔: </span>
+                    <strong id="user-title">-</strong>
+                </p>
+                
+                <p>
+                    <span class="en">Achievement: </span>
+                    <span class="cn hidden">成就: </span>
+                    <strong id="user-achievement">-</strong>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 合约ABI (从编译后的合约JSON中获取)
+        // Contract ABI (get from compiled contract JSON)
+        const contractABI = [
+            "function clickTheButton() public",
+            "function clickCount() public view returns (uint256)",
+            "function lastClicker() public view returns (address)",
+            "function resetTime() public view returns (uint256)",
+            "function clicksByUser(address) public view returns (uint256)",
+            "function getBoringTitleCN(address) public view returns (string)",
+            "function getBoringTitleEN(address) public view returns (string)",
+            "function getUserAchievement(address) public view returns (string)",
+            "function getTimeUntilReset() public view returns (uint256)",
+            "function getGameStatus() public view returns (uint256, address, uint256)",
+            "event ButtonClicked(address indexed clicker, uint256 totalClicks)"
+        ];
+        
+        // 合约地址 (部署后更新)
+        // Contract address (update after deployment)
+        const contractAddress = "0xF91A4EAB5A8208356Fd5aC89188445D3F0bc7eaf"; // 区块链上最无聊的游戏合约地址 | The Most Boring Game on Blockchain contract address
+        
+        let provider, signer, contract;
+        let userAccount = null;
+        let currentLanguage = 'en';
+        
+        // 初始化ethers
+        // Initialize ethers
+        async function initEthers() {
+            if (window.ethereum) {
+                provider = new ethers.providers.Web3Provider(window.ethereum);
+                
+                try {
+                    // 请求用户授权
+                    // Request user authorization
+                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    userAccount = accounts[0];
+                    
+                    signer = provider.getSigner();
+                    contract = new ethers.Contract(contractAddress, contractABI, signer);
+                    
+                    document.getElementById('connect-wallet').textContent = 
+                        currentLanguage === 'en' ? 'Wallet Connected' : '钱包已连接';
+                    document.getElementById('game-container').style.display = 'block';
+                    
+                    // 开始获取游戏数据
+                    // Start getting game data
+                    await updateGameData();
+                    startDataRefresh();
+                    
+                } catch (error) {
+                    console.error("User denied account access", error);
+                    alert(currentLanguage === 'en' ? 
+                        'Please connect your wallet to play the game.' : 
+                        '请连接您的钱包来玩游戏。');
+                }
+            } else {
+                alert(currentLanguage === 'en' ? 
+                    'Ethereum provider not detected. Please install MetaMask.' : 
+                    '未检测到以太坊提供者。请安装MetaMask。');
+            }
+        }
+        
+        // 点击按钮
+        // Click the button
+        async function clickButton() {
+            if (!contract) return;
+            
+            try {
+                const tx = await contract.clickTheButton();
+                await tx.wait();
+                await updateGameData();
+            } catch (error) {
+                console.error("Error clicking button:", error);
+                alert(currentLanguage === 'en' ? 
+                    'Error clicking the button. Check console for details.' : 
+                    '点击按钮错误。查看控制台了解详情。');
+            }
+        }
+        
+        // 更新游戏数据
+        // Update game data
+        async function updateGameData() {
+            if (!contract || !userAccount) return;
+            
+            try {
+                // 获取游戏状态
+                // Get game status
+                const [clickCount, lastClicker, timeUntilReset] = await contract.getGameStatus();
+                document.getElementById('total-clicks').textContent = clickCount.toString();
+                document.getElementById('last-clicker').textContent = 
+                    lastClicker.slice(0, 6) + '...' + lastClicker.slice(-4);
+                
+                // 更新计时器
+                // Update timer
+                updateTimer(timeUntilReset.toNumber());
+                
+                // 获取用户点击
+                // Get user clicks
+                const userClicks = await contract.clicksByUser(userAccount);
+                document.getElementById('your-clicks').textContent = userClicks.toString();
+                
+                // 获取用户头衔
+                // Get user title
+                const userTitle = currentLanguage === 'en' ? 
+                    await contract.getBoringTitleEN(userAccount) : 
+                    await contract.getBoringTitleCN(userAccount);
+                document.getElementById('user-title').textContent = userTitle;
+                
+                // 获取用户成就
+                // Get user achievement
+                const userAchievement = await contract.getUserAchievement(userAccount);
+                document.getElementById('user-achievement').textContent = userAchievement;
+                
+            } catch (error) {
+                console.error("Error updating game data:", error);
+            }
+        }
+        
+        // 更新计时器
+        // Update timer
+        function updateTimer(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            
+            const timeString = 
+                String(hours).padStart(2, '0') + ':' + 
+                String(minutes).padStart(2, '0') + ':' + 
+                String(secs).padStart(2, '0');
+                
+            document.getElementById('timer-value').textContent = timeString;
+        }
+        
+        // 开始定期刷新数据
+        // Start periodic data refresh
+        function startDataRefresh() {
+            // 每10秒更新一次数据
+            // Update data every 10 seconds
+            setInterval(updateGameData, 10000);
+        }
+        
+        // 切换语言
+        // Switch language
+        function switchLanguage(lang) {
+            currentLanguage = lang;
+            
+            const enElements = document.querySelectorAll('.en');
+            const cnElements = document.querySelectorAll('.cn');
+            
+            if (lang === 'en') {
+                document.getElementById('en-btn').classList.add('active');
+                document.getElementById('cn-btn').classList.remove('active');
+                
+                enElements.forEach(el => el.classList.remove('hidden'));
+                cnElements.forEach(el => el.classList.add('hidden'));
+            } else {
+                document.getElementById('en-btn').classList.remove('active');
+                document.getElementById('cn-btn').classList.add('active');
+                
+                enElements.forEach(el => el.classList.add('hidden'));
+                cnElements.forEach(el => el.classList.remove('hidden'));
+            }
+            
+            // 更新已连接状态的文本
+            // Update connected status text
+            if (userAccount) {
+                document.getElementById('connect-wallet').textContent = 
+                    lang === 'en' ? 'Wallet Connected' : '钱包已连接';
+            } else {
+                document.getElementById('connect-wallet').textContent = 
+                    lang === 'en' ? 'Connect Wallet' : '连接钱包';
+            }
+            
+            // 更新其他数据
+            // Update other data
+            if (contract && userAccount) {
+                updateGameData();
+            }
+        }
+        
+        // 事件监听器
+        // Event listeners
+        document.getElementById('connect-wallet').addEventListener('click', initEthers);
+        document.getElementById('boring-button').addEventListener('click', clickButton);
+        document.getElementById('en-btn').addEventListener('click', () => switchLanguage('en'));
+        document.getElementById('cn-btn').addEventListener('click', () => switchLanguage('cn'));
+        
+        // 监听账户变化
+        // Listen for account changes
+        if (window.ethereum) {
+            window.ethereum.on('accountsChanged', (accounts) => {
+                userAccount = accounts[0];
+                if (userAccount && contract) {
+                    updateGameData();
+                } else {
+                    document.getElementById('game-container').style.display = 'none';
+                    document.getElementById('connect-wallet').textContent = 
+                        currentLanguage === 'en' ? 'Connect Wallet' : '连接钱包';
+                }
+            });
+        }
+    </script>
+</body>
+</html>
